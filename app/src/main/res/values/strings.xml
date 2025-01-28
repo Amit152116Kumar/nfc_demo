@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">NFC_Demo</string>
+    <string name="service_description">Service Description</string>
+    <string name="aid_group_description">Aid Group Description\n</string>
+</resources>
