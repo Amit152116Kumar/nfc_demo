@@ -3,24 +3,26 @@ package com.example.nfc_demo
 import android.app.PendingIntent
 import android.content.Intent
 import android.content.IntentFilter
+import android.nfc.NdefMessage
+import android.nfc.NdefRecord
 import android.nfc.NfcAdapter
 import android.nfc.Tag
-import android.nfc.tech.IsoDep
+import android.nfc.tech.Ndef
 import android.nfc.tech.NfcF
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.nfc_demo.databinding.ActivityReceiverBinding
-import java.io.IOException
 import java.nio.ByteBuffer
-import java.util.Arrays
 
 
 class ReceiverActivity: AppCompatActivity(),NfcAdapter.ReaderCallback {
 
     private var nfcAdapter:NfcAdapter? = null;
     private lateinit var binding: ActivityReceiverBinding
+    private val TAG = javaClass.simpleName
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityReceiverBinding.inflate(layoutInflater)
@@ -35,6 +37,17 @@ class ReceiverActivity: AppCompatActivity(),NfcAdapter.ReaderCallback {
             Toast.makeText(this, "Enable NFC to Receive", Toast.LENGTH_SHORT).show();
             finish()
         }
+
+    }
+
+    override fun onPause() {
+        super.onPause()
+        // Disable foreground dispatch when the activity is paused
+        nfcAdapter?.disableForegroundDispatch(this)
+    }
+
+    override fun onResume() {
+        super.onResume()
 
         val pendingIntent = PendingIntent.getActivity(
             this, 0, Intent(this,javaClass).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP),
@@ -51,17 +64,27 @@ class ReceiverActivity: AppCompatActivity(),NfcAdapter.ReaderCallback {
             )
         )
 
-        nfcAdapter?.enableForegroundDispatch(this, pendingIntent, filters, techList)
+        val options = Bundle()
 
-    }
+        // Work around for some broken Nfc firmware implementations that poll the card too fast
+        options.putInt(NfcAdapter.EXTRA_READER_PRESENCE_CHECK_DELAY, 250)
 
-    override fun onPause() {
-        super.onPause()
-        // Disable foreground dispatch when the activity is paused
-        nfcAdapter?.disableForegroundDispatch(this)
+        nfcAdapter!!.enableForegroundDispatch(this, pendingIntent, filters, techList)
+        nfcAdapter!!.enableReaderMode(
+            this, this,
+            (NfcAdapter.FLAG_READER_NFC_A or
+                    NfcAdapter.FLAG_READER_NFC_B or
+                    NfcAdapter.FLAG_READER_NFC_F or
+                    NfcAdapter.FLAG_READER_NFC_V or
+                    NfcAdapter.FLAG_READER_NFC_BARCODE or
+                    NfcAdapter.FLAG_READER_NO_PLATFORM_SOUNDS),
+            options
+        )
+
     }
 
     override fun onTagDiscovered(tag: Tag?) {
+        Log.d(TAG, "TAG discovered")
         if (tag != null) {
             readTagData(tag)
         }
@@ -74,7 +97,7 @@ class ReceiverActivity: AppCompatActivity(),NfcAdapter.ReaderCallback {
         data: ByteArray?
     ): ByteArray {
         val lc = if ((data != null)) data.size else 0
-        val buffer = ByteBuffer.allocate(4 + lc)
+        val buffer = ByteBuffer.allocate(5 + lc)
         buffer.put(cla).put(ins).put(p1).put(p2)
         if (data != null) buffer.put(lc.toByte()).put(data)
         return buffer.array()
@@ -87,46 +110,44 @@ class ReceiverActivity: AppCompatActivity(),NfcAdapter.ReaderCallback {
         if (NfcAdapter.ACTION_TAG_DISCOVERED == intent.action) {
             // Handle NFC tag
             val tag = intent.getParcelableExtra<Tag>(NfcAdapter.EXTRA_TAG)
+            Log.d(TAG, "new Intent discovered")
             readTagData(tag!!)
         }
     }
 
     private fun readTagData(tag: Tag) {
-        val isoDep = IsoDep.get(tag) ?: return
+        Log.d(TAG, tag.toString())
+        val nDef = Ndef.get(tag) ?: return
 
-        try {
-            isoDep.connect()
 
-            // Build APDU Command
-            val commandApdu: ByteArray = buildCommandApdu(
-                0x00.toByte(),
-                0x10.toByte(),
-                0x00.toByte(),
-                0x00.toByte(),
-                "Token123".toByteArray()
-            )
 
-            // Send APDU to HCE
-            val responseApdu = isoDep.transceive(commandApdu)
+        // If we want to read
+        // As we did not turn on the NfcAdapter.FLAG_READER_SKIP_NDEF_CHECK
+        // We can get the cached Ndef message the system read for us.
+        val mNdefMessage: NdefMessage = nDef.cachedNdefMessage
+        val record = mNdefMessage.records
+        val ndefRecordsCount = record.size
+        if (ndefRecordsCount > 0) {
 
-            // Parse Response
-            if (responseApdu.size >= 2) {
-                val sw1 = responseApdu[responseApdu.size - 2]
-                val sw2 = responseApdu[responseApdu.size - 1]
-                val responseData = Arrays.copyOfRange(responseApdu, 0, responseApdu.size - 2)
+            var ndefText = ""
 
-                Log.d("APDU", "Response Data: " + String(responseData))
-                Log.d("APDU", "Status: " + String.format("%02X%02X", sw1, sw2))
+            for( i in  0..ndefRecordsCount){
+
+                val ndefTnf = record[i].tnf
+                val ndefType = record[i].type
+                val ndefPayload = record[i].payload
+                if (ndefTnf == NdefRecord.TNF_WELL_KNOWN && ndefType.contentEquals(NdefRecord.RTD_TEXT)) {
+                    ndefText = String(ndefPayload) + " \n"
+
+                    // ndefText = ndefText + Utils.parseTextrecordPayload(ndefPayload) + " \n";
+                    Log.d(TAG, "resultReceive ${ndefPayload.toString()}")
+                    binding.receiverTxt.text = ndefPayload.toString()
+                }
             }
-        } catch (e: IOException) {
-            e.printStackTrace()
-        } finally {
-            try {
-                isoDep.close()
-            } catch (e: IOException) {
-                e.printStackTrace()
-            }
+
         }
+
+
 
     }
 
