@@ -14,12 +14,13 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        binding.sendBtn.setOnClickListener{
-            val intent = Intent(this, MyHostApduService::class.java)
-            startService(intent)
+        binding.sendBtn.setOnClickListener {
+            val intent = Intent(this, SentActivity::class.java)
+            startActivity(intent)
         }
-        binding.receiveBtn.setOnClickListener{
-            val intent = Intent(this,ReceiverActivity::class.java)
+
+        binding.receiveBtn.setOnClickListener {
+            val intent = Intent(this, ReceiverActivity::class.java)
             startActivity(intent)
         }
     }
