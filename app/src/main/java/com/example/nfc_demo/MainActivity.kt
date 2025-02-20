@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.nfc_demo.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
+
     private lateinit var binding: ActivityMainBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -14,12 +15,12 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        binding.sendBtn.setOnClickListener{
-            val intent = Intent(this, MyHostApduService::class.java)
-            startService(intent)
+        binding.writeNFC.setOnClickListener {
+            val intent = Intent(this, WriterActivity::class.java)
+            startActivity(intent)
         }
-        binding.receiveBtn.setOnClickListener{
-            val intent = Intent(this,ReceiverActivity::class.java)
+        binding.readNFC.setOnClickListener {
+            val intent = Intent(this, ReceiverActivity::class.java)
             startActivity(intent)
         }
     }
