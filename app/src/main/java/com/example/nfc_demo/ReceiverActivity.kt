@@ -12,8 +12,6 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.IntentCompat
-import com.example.nfc_demo.Utils.authenticateMasterKey
-import com.example.nfc_demo.Utils.masterKey
 import com.example.nfc_demo.Utils.readBalance
 import com.example.nfc_demo.Utils.readClientInfo
 import com.example.nfc_demo.databinding.ActivityReceiverBinding
@@ -102,7 +100,6 @@ class ReceiverActivity : AppCompatActivity(), NfcAdapter.ReaderCallback {
 
         try {
             isoDep.connect()
-            authenticateMasterKey(isoDep, masterKey)
             binding.balance.text = readBalance(isoDep).toString()
 //            binding.transactionLogs.text = readTransactions(isoDep)
             binding.clientInfo.text = readClientInfo(isoDep)

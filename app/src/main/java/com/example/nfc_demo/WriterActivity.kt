@@ -8,19 +8,6 @@ import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.IntentCompat
-import com.example.nfc_demo.Utils.authenticateDesfire
-import com.example.nfc_demo.Utils.changeMasterKey
-import com.example.nfc_demo.Utils.createBalanceFile
-import com.example.nfc_demo.Utils.createClientInfoFile
-import com.example.nfc_demo.Utils.createTransactionHistoryFile
-import com.example.nfc_demo.Utils.createWalletApp
-import com.example.nfc_demo.Utils.defaultKey
-import com.example.nfc_demo.Utils.getApplications
-import com.example.nfc_demo.Utils.masterKey
-import com.example.nfc_demo.Utils.selectMasterApp
-import com.example.nfc_demo.Utils.setPermissions
-import com.example.nfc_demo.Utils.writeBalance
-import com.example.nfc_demo.Utils.writeClientInfo
 import com.example.nfc_demo.databinding.ActivityWriterBinding
 
 
@@ -68,26 +55,27 @@ class WriterActivity : AppCompatActivity(), NfcAdapter.ReaderCallback {
             Log.d("NFC", "Connected to MIFARE DESFire card")
             Log.d(
                 "NFC",
-                "timout: ${it.timeout}, max Transeive Length: ${it.maxTransceiveLength}, Historical Bytes: ${it.historicalBytes.contentHashCode()} "
+                "timout: ${it.timeout}, max Transeive Length: ${it.maxTransceiveLength}, Historical Bytes: ${it.historicalBytes.toHexString()} "
             )
             Log.d("NFC", "Extened Length Supported: ${it.isExtendedLengthApduSupported}")
             // Perform operations here
             runOnUiThread {
                 binding.infoTxt.text = "Writing to the Smart Card"
             }
-            selectMasterApp(it)
-            authenticateDesfire(it, defaultKey, false)
-            getApplications(it)
-            createWalletApp(it)
-            createClientInfoFile(it)
-            createBalanceFile(it)
-            createTransactionHistoryFile(it)
-            writeClientInfo(it, "J325UDSK7", "Amit Kumar")
-            writeBalance(it, 5000)
-            setPermissions(it)
+            performAdminOperations(it)
+//            selectMasterApp(it)
+//            authenticateDesfire(it, defaultKey, false)
+//            getApplications(it)
+//            createWalletApp(it)
+//            createClientInfoFile(it)
+//            createBalanceFile(it)
+//            createTransactionHistoryFile(it)
+//            writeClientInfo(it, "J325UDSK7", "Amit Kumar")
+//            writeBalance(it, 5000)
+//            setPermissions(it)
 
-            Log.d("NFC", "oldKey -> $defaultKey , newKey -> $masterKey")
-            changeMasterKey(it, defaultKey, masterKey)
+//            Log.d("NFC", "oldKey -> $defaultKey , newKey -> $masterKey")
+//            changeMasterKey(it, defaultKey, masterKey)
         }
     }
 

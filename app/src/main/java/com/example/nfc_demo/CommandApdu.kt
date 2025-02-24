@@ -1,12 +1,13 @@
 package com.example.nfc_demo
 
+import android.nfc.tech.IsoDep
+import android.util.Log
 import java.nio.ByteBuffer
 
 class CommandApdu private constructor(
     private val cla: CLA,
-    private val ins: INS,
-    private val p1: Byte,
-    private val p2: Byte,
+    private val ins: Instruction,
+    private val params: ApduParameters,
     private val data: ByteArray,
     private val le: ByteArray,
     private val lc: ByteArray,
@@ -15,75 +16,67 @@ class CommandApdu private constructor(
 
     fun toByteArray(): ByteArray {
         val buffer = ByteBuffer.allocate(_size)
-        buffer.put(cla.value).put(ins.value).put(p1).put(p2).put(lc).put(data).put(le)
+        buffer.put(cla.value).put(ins.value).put(params.p1).put(params.p2).put(lc).put(data).put(le)
         return buffer.array()
     }
 
-    fun getInstruction(): INS {
-        return this.ins
-    }
 
-    fun getData(): ByteArray {
-        return this.data
+    fun sendAPDU(isoDep: IsoDep): ResponseApdu {
+        val cmdApdu = this.toByteArray()
+        Log.d("NFC", "Sending Command APDU: ${cmdApdu.toHexString()}")
+        val response = isoDep.transceive(cmdApdu)
+        return ResponseApdu.fromByteArray(response)
     }
 
 
     class Builder {
         private lateinit var cla: CLA
-        private lateinit var ins: INS
-        private var p1: Byte = 0x00
-        private var p2: Byte = 0x00
-        private lateinit var data: ByteArray
-        private var le: ByteArray = ByteArray(0)
-        private lateinit var lc: ByteArray
+        private lateinit var ins: Instruction
+        private var params: ApduParameters = ApduParameters.Default
+        private var data = ByteArray(0)
+        private var le = ByteArray(1) { 0x00 }
+        private var lc = ByteArray(0)
         private var size: Int = 0
 
-        fun setClass(cla: CLA): Builder {
+        fun cla(cla: CLA): Builder {
             this.cla = cla
             return this
         }
 
-        fun setInstruction(ins: INS): Builder {
+        fun ins(ins: Instruction): Builder {
             this.ins = ins
             return this
         }
 
-        fun setParams(p1: Byte, p2: Byte): Builder {
-            this.p1 = p1
-            this.p2 = p2
+        fun p1p2(params: ApduParameters): Builder {
+            this.params = params
             return this
         }
 
-        fun setData(data: ByteArray): Builder {
+        fun data(data: ByteArray): Builder {
             this.data = data
             this.lc = encodeLength(data.size)
             return this
         }
 
-        fun setResponseLength(le: Int): Builder {
+        private fun le(le: Int): Builder {
             this.le = encodeLength(le)
             return this
         }
 
         fun build(): CommandApdu {
-            if (!::data.isInitialized) {
-                this.setData(ByteArray(0))
-            }
             size = 4 + lc.size + data.size + le.size
-            return CommandApdu(cla, ins, p1, p2, data, le, lc, size)
+            return CommandApdu(cla, ins, params, data, le, lc, size)
         }
 
         private fun encodeLength(nc: Int): ByteArray {
             require(nc in 0..65535) { "Nc must be between 0 and 65,535" }
 
             return when (nc) {
-                0 -> byteArrayOf(0) // 0 bytes
-                in 1..255 -> byteArrayOf(nc.toByte()) // 1 byte encoding
+                in 0..255 -> byteArrayOf(nc.toByte()) // 1 byte encoding
                 else -> byteArrayOf(0, (nc shr 8).toByte(), nc.toByte()) // 3 bytes encoding
             }
         }
 
     }
-
-
 }
