@@ -1,4 +1,4 @@
-package com.example.nfc_demo
+package com.example.nfc_demo.nfc.desfire
 
 import android.content.Intent
 import android.nfc.NfcAdapter

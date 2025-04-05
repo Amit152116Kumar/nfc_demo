@@ -1,4 +1,6 @@
-package com.example.nfc_demo
+package com.example.nfc_demo.nfc.desfire
+
+import com.example.nfc_demo.nfc.CommandApdu
 
 enum class CLA(val value: Byte) {
     ISO(0x00), PROPRIETARY(0x90.toByte())

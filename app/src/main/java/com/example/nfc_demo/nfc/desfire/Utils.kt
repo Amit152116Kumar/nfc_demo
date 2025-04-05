@@ -1,4 +1,4 @@
-package com.example.nfc_demo
+package com.example.nfc_demo.nfc.desfire
 
 import android.nfc.tech.IsoDep
 import android.util.Log

@@ -7,6 +7,15 @@
         android:required="true" />
 
     <uses-permission android:name="android.permission.NFC" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+
+    <uses-feature
+        android:name="android.hardware.usb.host"
+        android:required="true" />
+    <uses-permission android:name="android.permission.USB_PERMISSION" />
 
     <application
         android:allowBackup="true"
@@ -28,38 +37,60 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".WriterActivity"
-            android:permission="android.permission.NFC"
-            android:exported="true">
+        <activity
+            android:name=".nfc.desfire.WriterActivity"
+            android:exported="true"
+            android:permission="android.permission.NFC">
             <intent-filter>
                 <action android:name="android.nfc.action.TECH_DISCOVERED" />
             </intent-filter>
-            <meta-data android:name="android.nfc.action.TECH_DISCOVERED" android:resource="@xml/nfc_tech_filter" />
+            <meta-data
+                android:name="android.nfc.action.TECH_DISCOVERED"
+                android:resource="@xml/nfc_tech_filter" />
 
         </activity>
 
-        <activity android:name=".ReceiverActivity"
+        <activity
+            android:name=".weigand.UsbWeigandActivity"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
+                <action android:name="android.hardware.usb.action.USB_DEVICE_DETACHED" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"
+                android:resource="@xml/device_filter" />
+
+        </activity>
+
+        <activity
+            android:name=".weigand.WifiWiegandActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".nfc.ReceiverActivity"
             android:exported="true">
-<!--            <intent-filter>-->
-<!--                <action android:name="android.nfc.action.TECH_DISCOVERED" />-->
-<!--            </intent-filter>-->
-<!--            <meta-data android:name="android.nfc.action.TECH_DISCOVERED" android:resource="@xml/nfc_tech_filter" />-->
+            <!--            <intent-filter>-->
+            <!--                <action android:name="android.nfc.action.TECH_DISCOVERED" />-->
+            <!--            </intent-filter>-->
+            <!--            <meta-data android:name="android.nfc.action.TECH_DISCOVERED" android:resource="@xml/nfc_tech_filter" />-->
         </activity>
 
-<!--        <service-->
-<!--            android:name=".MyHostApduService"-->
-<!--            android:exported="true"-->
-<!--            android:permission="android.permission.BIND_NFC_SERVICE">-->
-<!--            <intent-filter>-->
-<!--                <action android:name="android.nfc.cardemulation.action.HOST_APDU_SERVICE" />-->
+        <!--        <service-->
+        <!--            android:name=".MyHostApduService"-->
+        <!--            android:exported="true"-->
+        <!--            android:permission="android.permission.BIND_NFC_SERVICE">-->
+        <!--            <intent-filter>-->
+        <!--                <action android:name="android.nfc.cardemulation.action.HOST_APDU_SERVICE" />-->
 
-<!--                <category android:name="android.intent.category.DEFAULT" />-->
-<!--            </intent-filter>-->
+        <!--                <category android:name="android.intent.category.DEFAULT" />-->
+        <!--            </intent-filter>-->
 
-<!--            <meta-data-->
-<!--                android:name="android.nfc.cardemulation.host_apdu_service"-->
-<!--                android:resource="@xml/nfc_service" />-->
-<!--        </service>-->
+        <!--            <meta-data-->
+        <!--                android:name="android.nfc.cardemulation.host_apdu_service"-->
+        <!--                android:resource="@xml/nfc_service" />-->
+        <!--        </service>-->
 
     </application>
 

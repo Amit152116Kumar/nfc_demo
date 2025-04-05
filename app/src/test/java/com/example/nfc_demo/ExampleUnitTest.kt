@@ -1,5 +1,9 @@
 package com.example.nfc_demo
 
+import com.example.nfc_demo.nfc.desfire.AID
+import com.example.nfc_demo.nfc.desfire.DefaultApdu
+import com.example.nfc_demo.nfc.desfire.Instruction
+import com.example.nfc_demo.nfc.desfire.toHexString
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import java.security.SecureRandom

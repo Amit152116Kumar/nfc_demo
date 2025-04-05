@@ -1,7 +1,11 @@
-package com.example.nfc_demo
+package com.example.nfc_demo.nfc
 
 import android.nfc.tech.IsoDep
 import android.util.Log
+import com.example.nfc_demo.nfc.desfire.ApduParameters
+import com.example.nfc_demo.nfc.desfire.CLA
+import com.example.nfc_demo.nfc.desfire.Instruction
+import com.example.nfc_demo.nfc.desfire.toHexString
 import java.nio.ByteBuffer
 
 class CommandApdu private constructor(

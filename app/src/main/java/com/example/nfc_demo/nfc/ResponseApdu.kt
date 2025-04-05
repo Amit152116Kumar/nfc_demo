@@ -1,6 +1,7 @@
-package com.example.nfc_demo
+package com.example.nfc_demo.nfc
 
 import android.util.Log
+import com.example.nfc_demo.nfc.desfire.Status
 
 class ResponseApdu(val status: Status, val data: ByteArray?) {
 

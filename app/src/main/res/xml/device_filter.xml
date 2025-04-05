@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- FTDI USB-Wiegand Reader -->
+    <usb-device vendor-id="1027" product-id="24577" /> <!-- 0x0403, 0x6001 -->
+
+    <!-- Add additional devices if needed -->
+    <!-- Common USB to serial adapters -->
+    <usb-device vendor-id="1027" /> <!-- All FTDI devices -->
+    <usb-device vendor-id="6790" /> <!-- Prolific devices -->
+    <usb-device vendor-id="4292" /> <!-- Silicon Labs devices -->
+</resources>

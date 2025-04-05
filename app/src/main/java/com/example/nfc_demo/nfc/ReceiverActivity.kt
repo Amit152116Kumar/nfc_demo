@@ -1,4 +1,4 @@
-package com.example.nfc_demo
+package com.example.nfc_demo.nfc
 
 import android.app.PendingIntent
 import android.content.Intent
@@ -12,9 +12,9 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.IntentCompat
-import com.example.nfc_demo.Utils.readBalance
-import com.example.nfc_demo.Utils.readClientInfo
 import com.example.nfc_demo.databinding.ActivityReceiverBinding
+import com.example.nfc_demo.nfc.desfire.Utils.readBalance
+import com.example.nfc_demo.nfc.desfire.Utils.readClientInfo
 import java.io.IOException
 import java.nio.ByteBuffer
 
