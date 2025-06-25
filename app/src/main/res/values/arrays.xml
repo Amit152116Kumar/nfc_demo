@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="input_type_options">
+        <item>Hex Code</item>
+        <item>Decimal</item>
+    </string-array>
+</resources>

@@ -34,14 +34,15 @@
         <androidx.core.widget.NestedScrollView
             android:id="@+id/statusScrollView"
             android:layout_width="match_parent"
-            android:layout_height="75dp"
+            android:layout_height="0dp"
             android:layout_marginTop="8dp"
             android:background="#F0F0F0"
             app:layout_constraintBottom_toTopOf="@id/connectionStatusLabel"
+            app:layout_constraintHeight_percent="0.3"
             app:layout_constraintTop_toBottomOf="@id/logLabel">
 
             <TextView
-                android:id="@+id/statusText"
+                android:id="@+id/logText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:fontFamily="monospace"
@@ -78,21 +79,31 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@id/connectionStatusLabel" />
 
+        <Spinner
+            android:id="@+id/inputTypeSpinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:layout_marginTop="16dp"
+            android:entries="@array/input_type_options"
+            app:layout_constraintBottom_toTopOf="@id/facilityCodeLayout"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/scanButton" />
         <!-- Input Fields -->
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/facilityCodeLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:hint="Facility Code (max 12 chars)"
-            app:layout_constraintTop_toBottomOf="@id/scanButton">
+            android:layout_marginTop="17dp"
+            android:hint="Facility Code (4 hex chars)"
+            app:layout_constraintTop_toBottomOf="@id/inputTypeSpinner">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/facilityCodeInput"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="text"
-                android:maxLength="12" />
+                android:inputType="textCapCharacters"
+                android:maxLength="4" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -100,15 +111,15 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:hint="Card Number (max 12 chars)"
+            android:hint="Card Number (4 hex chars)"
             app:layout_constraintTop_toBottomOf="@id/facilityCodeLayout">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/cardNumberInput"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="text"
-                android:maxLength="12" />
+                android:inputType="textCapCharacters"
+                android:maxLength="4" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <Button
